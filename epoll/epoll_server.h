@@ -7,11 +7,11 @@
 #include "zepoll.h"
 #include "socketheads.h"
 #include "task.h"
-#include <QString>
-
+#include <stdlib.h>
+#include <sstream>
 
 typedef std::pair<int, in_addr> FDtoIP;
-typedef std::pair<in_addr, QString> IPtoSTR;
+typedef std::pair<in_addr, std::string> IPtoSTR;
 
 /**
  * @brief The Epoll_server class 服务器
@@ -51,8 +51,7 @@ private:
 
     std::list<FDtoIP> fd_IP;
     std::list<IPtoSTR> ip_str;
-
-
+    std::map<std::string, int> mapScore;
 
 };
 

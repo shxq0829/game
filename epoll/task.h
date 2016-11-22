@@ -16,7 +16,7 @@
 class Task
 {
 public:
-    typedef enum {CONNECT = 0, DISCONNECT, TALKING} TASKFLAG;
+    typedef enum {CONNECT = 0, DISCONNECT, TALKING, FUNCTION} TASKFLAG;
     Task(const std::string &message, TASKFLAG flag = TALKING);
     const std::string& getMessage() const;
     TASKFLAG getFlag() const;

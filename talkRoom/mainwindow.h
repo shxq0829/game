@@ -38,6 +38,8 @@ private slots:
     void slt_NetworkError();
     void slt_connect();
     void slt_about();
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 

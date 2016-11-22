@@ -36,3 +36,4 @@ void SettingDialog::slt_doButton()
         emit sig_IpAndPort(ui->lineEdit->text(), port, clientName);
     }
 }
+

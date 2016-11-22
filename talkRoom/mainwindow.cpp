@@ -97,3 +97,12 @@ void MainWindow::slt_about()
 {
     QApplication::aboutQt();
 }
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QString ls = "ls";
+    if(c_socket.state() == QTcpSocket::ConnectedState) {
+        c_socket.write(ls.toLatin1());
+        std::cout << "success to ls" <<std::endl;
+    } else { }
+}

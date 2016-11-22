@@ -153,7 +153,8 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     if(nameflag) {
         nameflag = false;
         ip_str.push_back(IPtoSTR(client_addr.sin_addr, buf));
-        std::cout << "1:" << buf << std::endl;
+        mapScore.insert(std::pair<std::string, int>(buf, 0));
+        std::cout << "1:" << buf << " map:" << mapScore[buf] << std::endl;
         return 0;
     }
     if (nread == -1 && errno != EAGAIN) {
@@ -173,6 +174,24 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         t.setIP(client_addr.sin_addr);
         t.setS_fd((*ite).first);
         doTask(t);
+    } else if(strcmp(buf,"ls") == 0) {                    // User Information
+        std::string tmp = "UserInfo:\n";
+        std::list<IPtoSTR>::iterator it = ip_str.begin();
+        for(; it != ip_str.end(); ++it) {
+            tmp += (*it).second;
+            tmp += "\t";
+            //std::string str;
+            //std::cout<<<<std::endl;
+            std::stringstream stream;
+            stream << mapScore[(*it).second];
+            tmp += stream.str();
+            tmp += "\n";
+        }
+        Task t(tmp,Task::FUNCTION);
+        t.setIP(client_addr.sin_addr);
+        t.setS_fd((*ite).first);
+        doTask(t);
+        //std::cout << tmp <<std::endl;
     } else {
         Task t(buf,Task::TALKING);
         t.setIP(client_addr.sin_addr);
@@ -184,9 +203,6 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     //    t->setIP((*ite).second);
     //    t->setS_fd((*ite).first);
 
-
-
-
     // m_event.data.fd = ev.data.fd;
     // m_event.events = ev.events;
     return 0;//_epoll->mod(m_event.data.fd, &m_event);
@@ -195,6 +211,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
 
 int Epoll_server::writeSocketEpoll(const epoll_event &ev)
 {
+
     Task *t = static_cast<Task*>(ev.data.ptr);
     const char* buf = t->getData().data();
     int nwrite = 0, data_size = strlen(buf);

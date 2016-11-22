@@ -46,8 +46,10 @@ std::string Task::getData() const
     } else {
         if (m_flag == DISCONNECT) {
             re = ::inet_ntoa(ip) + std::string("----->") + "DISCONNECT   " + m_message;;
-        } else {
+        } else if(m_flag == TALKING){
             re = ::inet_ntoa(ip) + std::string("----->Talk:") + m_message;
+        } else {
+            re = ::inet_ntoa(ip) + std::string("--->Function") + m_message;
         }
     }
     return re;

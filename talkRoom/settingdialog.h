@@ -26,6 +26,7 @@ signals:
     void sig_IpAndPort(const QString &ip, int port, const QString &nameClient);
 private slots:
     void slt_doButton();
+
 private:
     Ui::SettingDialog *ui;
 };
