@@ -2,12 +2,6 @@
 
 #include <iostream>
 
-
-//static char welcom[] = "welcom to my epoll_server";
-//static char sorry[] = "Sorry! This is a simple demo,so not any function!";
-//static char buf[BUFSIZ];
-
-
 Epoll_server::Epoll_server(int port):_port(port),
     server_socket_fd(-1),
     _epoll(0),
@@ -79,12 +73,12 @@ int Epoll_server::doCastMission()
         std::cout << "the winner is " << it1->first << std::endl;
         it1->second = 0;
         it2->second = 0;
-        return 1;
+        return it1->first;
     } else if((client2 == SCISSOR && client1 == PAPER) || (client2 == ROCK && client1 == SCISSOR) || (client2 == PAPER && client1 == ROCK)) {
         std::cout << "the winner is " << it2->first << std::endl;
         it1->second = 0;
         it2->second = 0;
-        return -1;
+        return it2->first;
     } else {
         std::cout << "a drawn game!!" << std::endl;
         it1->second = 0;
@@ -177,6 +171,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     if(nameflag) {
         nameflag = false;
         ip_str.push_back(FDtoSTR(ev.data.fd, buf));
+        mapFDtoSTR.insert(std::pair<int, std::string>(ev.data.fd,buf));
         mapScore.insert(std::pair<std::string, int>(buf, 0));
         mapHit.insert(std::pair<int, int>(ev.data.fd, 0));
         std::cout << "1:" << buf << " map:" << mapScore[buf] << std::endl;
@@ -255,6 +250,18 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         std::cout << "receive : " << receiveflag << std::endl;
         //hit
         int result = doCastMission();
+        std::string tmp = "----The Game Result----\n";
+        if (result == 0) {
+            tmp += "This is a drawn game \n";
+        } else {
+            std::stringstream stream;
+            stream << result;
+            tmp = tmp + " The winner is " + mapFDtoSTR[result] + " fd is " + stream.str() + "\n";
+        }
+        Task t(tmp,Task::RESULTING);
+        t.setIP(client_addr.sin_addr);
+        t.setS_fd((*ite).first);
+        doTask(t);
         receiveflag = 0;
     } else {
         receiveflag = 0;

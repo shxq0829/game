@@ -1,9 +1,3 @@
-/********************************************************************
-* author 周翔
-* e-mail 604487178@qq.com
-* blog http://blog.csdn.net/zhx6044
-**********************************************************************/
-
 #include "task.h"
 
 Task::Task(const std::string &message, TASKFLAG flag):
@@ -55,6 +49,8 @@ std::string Task::getData() const
             re = tmp + " " + ::inet_ntoa(ip) + std::string("--->Function: ") + m_message;
         } else if (m_flag == CASTING) {
             re = tmp + " " + ::inet_ntoa(ip) + std::string("--->Casting: ") + m_message;
+        } else if (m_flag == RESULTING) {
+            re = m_message;
         }
     }
     return re;

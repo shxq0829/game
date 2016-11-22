@@ -1,9 +1,3 @@
-/********************************************************************
-* author 周翔
-* e-mail 604487178@qq.com
-* blog http://blog.csdn.net/zhx6044
-**********************************************************************/
-
 #include "settingdialog.h"
 #include "ui_settingdialog.h"
 #include <iostream>

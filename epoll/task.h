@@ -1,9 +1,3 @@
-/********************************************************************
-* author 周翔
-* e-mail 604487178@qq.com
-* blog http://blog.csdn.net/zhx6044
-**********************************************************************/
-
 #ifndef TASK_H
 #define TASK_H
 
@@ -18,7 +12,7 @@
 class Task
 {
 public:
-    typedef enum {CONNECT = 0, DISCONNECT, TALKING, FUNCTION, CASTING} TASKFLAG;
+    typedef enum {CONNECT = 0, DISCONNECT, TALKING, FUNCTION, CASTING, RESULTING} TASKFLAG;
     Task(const std::string &message, TASKFLAG flag = TALKING);
     const std::string& getMessage() const;
     TASKFLAG getFlag() const;

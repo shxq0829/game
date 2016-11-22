@@ -54,6 +54,7 @@ private:
 
     std::list<FDtoIP> fd_IP;
     std::list<FDtoSTR> ip_str;
+    std::map<int, std::string> mapFDtoSTR;
     std::map<int, int> mapHit;
     std::map<std::string, int> mapScore;
 
