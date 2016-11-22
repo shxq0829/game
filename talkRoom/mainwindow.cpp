@@ -100,9 +100,9 @@ void MainWindow::slt_about()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    QString ls = "ls";
+    QString ls = "info";
     if(c_socket.state() == QTcpSocket::ConnectedState) {
         c_socket.write(ls.toLatin1());
-        std::cout << "success to ls" <<std::endl;
+        std::cout << "success to info" <<std::endl;
     } else { }
 }

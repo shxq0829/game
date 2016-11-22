@@ -74,6 +74,8 @@ void Epoll_server::doTask(const Task &t)
 {
     std::list<FDtoIP>::iterator ite = fd_IP.begin();
     std::list<FDtoIP>::iterator ite1 = fd_IP.end();
+    std::list<IPtoSTR>::iterator it = ip_str.begin();
+    std::list<IPtoSTR>::iterator it1 = ip_str.end();
     for (;ite != fd_IP.end();++ite) {
         if ((*ite).first != t.getS_fd()) {
             memset(&m_event, '\0', sizeof(m_event));
@@ -86,9 +88,15 @@ void Epoll_server::doTask(const Task &t)
             ite1 = ite;
         }
     }
+    for (; it != ip_str.end(); ++it) {
+        if((*it).first == t.getS_fd()) {
+            it1 = it;
+        }
+    }
     if (t.getFlag() == Task::DISCONNECT) {
         if (ite1 != fd_IP.end()) {
             fd_IP.erase(ite1);
+            ip_str.erase(it1);      //delete user information
         }
 
     }
@@ -121,11 +129,7 @@ int Epoll_server::acceptSocketEpoll()
             t.setIP(client_addr.sin_addr);
             t.setS_fd(connect_fd);
             doTask(t);
-
         }
-
-
-
     }
 
     if (connect_fd == -1 && errno != EAGAIN && errno != ECONNABORTED
@@ -133,12 +137,7 @@ int Epoll_server::acceptSocketEpoll()
         return -1;
 
     }
-
-
-
     return 0;
-
-
 }
 
 
@@ -152,7 +151,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     }
     if(nameflag) {
         nameflag = false;
-        ip_str.push_back(IPtoSTR(client_addr.sin_addr, buf));
+        ip_str.push_back(IPtoSTR(ev.data.fd, buf));
         mapScore.insert(std::pair<std::string, int>(buf, 0));
         std::cout << "1:" << buf << " map:" << mapScore[buf] << std::endl;
         return 0;
@@ -174,7 +173,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         t.setIP(client_addr.sin_addr);
         t.setS_fd((*ite).first);
         doTask(t);
-    } else if(strcmp(buf,"ls") == 0) {                    // User Information
+    } else if(strcmp(buf,"info") == 0) {                    // User Information
         std::string tmp = "UserInfo:\n";
         std::list<IPtoSTR>::iterator it = ip_str.begin();
         for(; it != ip_str.end(); ++it) {

@@ -11,7 +11,7 @@
 #include <sstream>
 
 typedef std::pair<int, in_addr> FDtoIP;
-typedef std::pair<in_addr, std::string> IPtoSTR;
+typedef std::pair<int, std::string> IPtoSTR;
 
 /**
  * @brief The Epoll_server class 服务器
