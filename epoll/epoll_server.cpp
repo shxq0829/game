@@ -69,15 +69,37 @@ int Epoll_server::setNonblocking(int socket_fd)
     }
     return 0;
 }
-
+int Epoll_server::doCastMission()
+{
+    std::map<int, int>::iterator it1 = mapHit.begin();
+    std::map<int, int>::iterator it2 = it1++;
+    int client1 = it1->second;
+    int client2 = it2->second;
+    if((client1 == SCISSOR && client2 == PAPER) || (client1 == ROCK && client2 == SCISSOR) || (client1 == PAPER && client2 == ROCK)) {
+        std::cout << "the winner is " << it1->first << std::endl;
+        it1->second = 0;
+        it2->second = 0;
+        return 1;
+    } else if((client2 == SCISSOR && client1 == PAPER) || (client2 == ROCK && client1 == SCISSOR) || (client2 == PAPER && client1 == ROCK)) {
+        std::cout << "the winner is " << it2->first << std::endl;
+        it1->second = 0;
+        it2->second = 0;
+        return -1;
+    } else {
+        std::cout << "a drawn game!!" << std::endl;
+        it1->second = 0;
+        it2->second = 0;
+        return 0;
+    }
+}
 
 void Epoll_server::doTask(const Task &t)
 {
 
     std::list<FDtoIP>::iterator ite = fd_IP.begin();
     std::list<FDtoIP>::iterator ite1 = fd_IP.end();
-    std::list<IPtoSTR>::iterator it = ip_str.begin();
-    std::list<IPtoSTR>::iterator it1 = ip_str.end();
+    std::list<FDtoSTR>::iterator it = ip_str.begin();
+    std::list<FDtoSTR>::iterator it1 = ip_str.end();
     for (;ite != fd_IP.end();++ite) {
         if ((*ite).first != t.getS_fd()) {
             memset(&m_event, '\0', sizeof(m_event));
@@ -154,7 +176,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     //std::cout << "test: " << buf << std::endl;
     if(nameflag) {
         nameflag = false;
-        ip_str.push_back(IPtoSTR(ev.data.fd, buf));
+        ip_str.push_back(FDtoSTR(ev.data.fd, buf));
         mapScore.insert(std::pair<std::string, int>(buf, 0));
         mapHit.insert(std::pair<int, int>(ev.data.fd, 0));
         std::cout << "1:" << buf << " map:" << mapScore[buf] << std::endl;
@@ -179,7 +201,7 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         doTask(t);
     } else if(strcmp(buf,"info") == 0) {                    // User Information
         std::string tmp = "UserInfo:\n";
-        std::list<IPtoSTR>::iterator it = ip_str.begin();
+        std::list<FDtoSTR>::iterator it = ip_str.begin();
         for(; it != ip_str.end(); ++it) {
             tmp += (*it).second;
             tmp += "\t";
@@ -226,11 +248,16 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     std::cout << mapHit.size() << std::endl;
     std::map<int, int>::iterator mapit = mapHit.begin();
     for( ; mapit != mapHit.end(); mapit++) {
-        receiveflag++;
+        if(mapit->second != 0) receiveflag++;
     }
     std::cout << receiveflag << std::endl;
     if(receiveflag == mapHit.size()) {
         std::cout << "receive : " << receiveflag << std::endl;
+        //hit
+        int result = doCastMission();
+        receiveflag = 0;
+    } else {
+        receiveflag = 0;
     }
     //    Task *t = new Task(buf,Task::DISCONNECT);
     //    t->setIP((*ite).second);

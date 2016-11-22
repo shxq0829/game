@@ -11,7 +11,7 @@
 #include <sstream>
 
 typedef std::pair<int, in_addr> FDtoIP;
-typedef std::pair<int, std::string> IPtoSTR;
+typedef std::pair<int, std::string> FDtoSTR;
 typedef enum {SCISSOR = 1, PAPER, ROCK} CASTFLAG;
 
 /**
@@ -36,6 +36,7 @@ private:
     int writeSocketEpoll(const epoll_event &ev);
 
     void doTask(const Task &t);
+    int doCastMission();
 
     int _port;
     int server_socket_fd;
@@ -45,14 +46,14 @@ private:
     epoll_event m_event;
     bool on;
     bool nameflag;
-    uint8_t receiveflag;
+    int receiveflag;
 
 
     static int setNonblocking(int socket_fd);
 
 
     std::list<FDtoIP> fd_IP;
-    std::list<IPtoSTR> ip_str;
+    std::list<FDtoSTR> ip_str;
     std::map<int, int> mapHit;
     std::map<std::string, int> mapScore;
 
