@@ -63,6 +63,25 @@ int Epoll_server::setNonblocking(int socket_fd)
     }
     return 0;
 }
+int Epoll_server::store(std::string name, int fd, int score)
+{
+    char* zErrMsg;
+    rc_db = sqlite3_open("userInfo.db",&db);
+    if(rc_db) {
+        printf("open or create database failed:%s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return -1;
+    }
+    std::string str = "CREATE TABLE UserInfo(ID INTEGER PRIMARY KEY,name CHAR(50),fd INTEGER,score INTEGER);";
+    char *sql1 = (char *)str.c_str();
+    sqlite3_exec( db , sql1 , 0 , 0 , &zErrMsg );
+    char sql2[100] ;
+    sprintf(sql2,"INSERT INTO UserInfo VALUES( NULL , %s , %d , %d);", name.c_str(), fd, score);
+    sqlite3_exec( db , sql2 , 0 , 0 , &zErrMsg );
+    sqlite3_close(db);
+    return 0;
+}
+// logic of cast
 int Epoll_server::doCastMission()
 {
     std::map<int, int>::iterator it1 = mapHit.begin();
@@ -89,7 +108,6 @@ int Epoll_server::doCastMission()
 
 void Epoll_server::doTask(const Task &t)
 {
-
     std::list<FDtoIP>::iterator ite = fd_IP.begin();
     std::list<FDtoIP>::iterator ite1 = fd_IP.end();
     std::list<FDtoSTR>::iterator it = ip_str.begin();
@@ -103,6 +121,12 @@ void Epoll_server::doTask(const Task &t)
             m_event.data.ptr = static_cast<void*>(c);
             _epoll->mod((*ite).first, &m_event);
         } else {
+            memset(&m_event, '\0', sizeof(m_event));
+            m_event.events = EPOLLOUT | EPOLLET;
+            Task *c = new Task(t);
+            c->setS_fd((*ite).first);
+            m_event.data.ptr = static_cast<void*>(c);
+            _epoll->mod((*ite).first, &m_event);
             ite1 = ite;
         }
     }
@@ -113,8 +137,14 @@ void Epoll_server::doTask(const Task &t)
     }
     if (t.getFlag() == Task::DISCONNECT) {
         if (ite1 != fd_IP.end()) {
+            int tmp_fd = t.getS_fd();
+            std::string tmp_user = mapFDtoSTR[tmp_fd];
+            if(store(tmp_user,tmp_fd,mapScore[tmp_user]) == 0) {
+                std::cout << "store success" << std::endl;
+            }
             fd_IP.erase(ite1);
             ip_str.erase(it1);      //delete user information
+
         }
 
     }
@@ -256,7 +286,8 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         } else {
             std::stringstream stream;
             stream << result;
-            tmp = tmp + " The winner is " + mapFDtoSTR[result] + " fd is " + stream.str() + "\n";
+            tmp = tmp + " The winner is " + mapFDtoSTR[result] + "\n   fd is " + stream.str() + "\n";
+            mapScore[mapFDtoSTR[result]]++;
         }
         Task t(tmp,Task::RESULTING);
         t.setIP(client_addr.sin_addr);

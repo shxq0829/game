@@ -9,6 +9,7 @@
 #include "task.h"
 #include <stdlib.h>
 #include <sstream>
+#include <sqlite3.h>
 
 typedef std::pair<int, in_addr> FDtoIP;
 typedef std::pair<int, std::string> FDtoSTR;
@@ -26,6 +27,8 @@ public:
     int listen();
     void poweroff();
     bool states() const;
+    sqlite3* db;
+    int rc_db;
 private:
     enum  {BLOCKLOG = 5};
 
@@ -37,6 +40,7 @@ private:
 
     void doTask(const Task &t);
     int doCastMission();
+    int store(std::string name, int fd, int score);
 
     int _port;
     int server_socket_fd;
@@ -46,7 +50,7 @@ private:
     epoll_event m_event;
     bool on;
     bool nameflag;
-    int receiveflag;
+    uint receiveflag;
 
 
     static int setNonblocking(int socket_fd);

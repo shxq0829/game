@@ -45,7 +45,7 @@ std::string Task::getData() const
             re = tmp + " " + ::inet_ntoa(ip) + std::string("----->") + "DISCONNECT   " + m_message;;
         } else if(m_flag == TALKING){
             re = tmp + " " + ::inet_ntoa(ip) + std::string("----->Talk: ") + m_message;
-        } else if(m_flag == FUNCTION){
+        } else if(m_flag == FUNCTION) {
             re = tmp + " " + ::inet_ntoa(ip) + std::string("--->Function: ") + m_message;
         } else if (m_flag == CASTING) {
             re = tmp + " " + ::inet_ntoa(ip) + std::string("--->Casting: ") + m_message;
