@@ -12,6 +12,7 @@
 
 typedef std::pair<int, in_addr> FDtoIP;
 typedef std::pair<int, std::string> IPtoSTR;
+typedef enum {SCISSOR = 1, PAPER, ROCK} CASTFLAG;
 
 /**
  * @brief The Epoll_server class 服务器
@@ -44,6 +45,7 @@ private:
     epoll_event m_event;
     bool on;
     bool nameflag;
+    uint8_t receiveflag;
 
 
     static int setNonblocking(int socket_fd);

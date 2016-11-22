@@ -12,7 +12,8 @@ Epoll_server::Epoll_server(int port):_port(port),
     server_socket_fd(-1),
     _epoll(0),
     on(true),
-    nameflag(false)
+    nameflag(false),
+    receiveflag(0)
 {
 
 
@@ -72,6 +73,7 @@ int Epoll_server::setNonblocking(int socket_fd)
 
 void Epoll_server::doTask(const Task &t)
 {
+
     std::list<FDtoIP>::iterator ite = fd_IP.begin();
     std::list<FDtoIP>::iterator ite1 = fd_IP.end();
     std::list<IPtoSTR>::iterator it = ip_str.begin();
@@ -149,10 +151,12 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
     while ((nread = ::read(ev.data.fd, buf + n, BUFSIZ-1)) > 0) {
         n += nread;
     }
+    //std::cout << "test: " << buf << std::endl;
     if(nameflag) {
         nameflag = false;
         ip_str.push_back(IPtoSTR(ev.data.fd, buf));
         mapScore.insert(std::pair<std::string, int>(buf, 0));
+        mapHit.insert(std::pair<int, int>(ev.data.fd, 0));
         std::cout << "1:" << buf << " map:" << mapScore[buf] << std::endl;
         return 0;
     }
@@ -189,20 +193,45 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         t.setS_fd((*ite).first);
         doTask(t);
         //std::cout << tmp <<std::endl;
-    } else if(strcmp(buf,"scissor")) {
+    } else if(strcmp(buf,"scissor") == 0) {
         std::string tmp = "you_cast_scissor";
+        mapHit[ev.data.fd] = SCISSOR;
         Task t(tmp,Task::CASTING);
         t.setIP(client_addr.sin_addr);
         t.setS_fd((*ite).first);
         doTask(t);
-        std::cout << tmp <<std::endl;
+        std::cout << tmp << ":" << ev.data.fd << ":" << mapHit[ev.data.fd] <<std::endl;
+    } else if(strcmp(buf,"paper") == 0) {
+        std::string tmp = "you_cast_paper";
+        mapHit[ev.data.fd] = PAPER;
+        Task t(tmp,Task::CASTING);
+        t.setIP(client_addr.sin_addr);
+        t.setS_fd((*ite).first);
+        doTask(t);
+        std::cout << tmp << ":" << ev.data.fd << ":" << mapHit[ev.data.fd] <<std::endl;
+    } else if(strcmp(buf,"rock") == 0) {
+        std::string tmp = "you_cast_rock";
+        mapHit[ev.data.fd] = ROCK;
+        Task t(tmp,Task::CASTING);
+        t.setIP(client_addr.sin_addr);
+        t.setS_fd((*ite).first);
+        doTask(t);
+        std::cout << tmp << ":" << ev.data.fd << ":" <<  mapHit[ev.data.fd] <<std::endl;
     } else {
         Task t(buf,Task::TALKING);
         t.setIP(client_addr.sin_addr);
         t.setS_fd((*ite).first);
         doTask(t);
     }
-
+    std::cout << mapHit.size() << std::endl;
+    std::map<int, int>::iterator mapit = mapHit.begin();
+    for( ; mapit != mapHit.end(); mapit++) {
+        receiveflag++;
+    }
+    std::cout << receiveflag << std::endl;
+    if(receiveflag == mapHit.size()) {
+        std::cout << "receive : " << receiveflag << std::endl;
+    }
     //    Task *t = new Task(buf,Task::DISCONNECT);
     //    t->setIP((*ite).second);
     //    t->setS_fd((*ite).first);
@@ -308,7 +337,7 @@ int Epoll_server::listen()
 
 
                     }
-                    std::cout << num << std::endl;
+                   // std::cout << num << std::endl;
                     /**
                      * EPOLLOUT event
                      */
