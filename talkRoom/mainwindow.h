@@ -40,6 +40,12 @@ private slots:
     void slt_about();
     void on_pushButton_2_clicked();
 
+    void on_scissor_clicked();
+
+    void on_paper_pressed();
+
+    void on_rock_clicked();
+
 private:
     Ui::MainWindow *ui;
 

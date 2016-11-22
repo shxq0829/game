@@ -8,6 +8,8 @@
 #define TASK_H
 
 #include <string>
+#include "stdio.h"
+#include <sstream>
 #include <socketheads.h>
 
 /**
@@ -16,7 +18,7 @@
 class Task
 {
 public:
-    typedef enum {CONNECT = 0, DISCONNECT, TALKING, FUNCTION} TASKFLAG;
+    typedef enum {CONNECT = 0, DISCONNECT, TALKING, FUNCTION, CASTING} TASKFLAG;
     Task(const std::string &message, TASKFLAG flag = TALKING);
     const std::string& getMessage() const;
     TASKFLAG getFlag() const;

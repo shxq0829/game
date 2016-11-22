@@ -106,3 +106,30 @@ void MainWindow::on_pushButton_2_clicked()
         std::cout << "success to info" <<std::endl;
     } else { }
 }
+
+void MainWindow::on_scissor_clicked()
+{
+    QString scissor = "scissor";
+    if(c_socket.state() == QTcpSocket::ConnectedState) {
+        c_socket.write(scissor.toLatin1());
+        std::cout << "success to scissor" <<std::endl;
+    } else { }
+}
+
+void MainWindow::on_paper_pressed()
+{
+    QString paper = "paper";
+    if(c_socket.state() == QTcpSocket::ConnectedState) {
+        c_socket.write(paper.toLatin1());
+        std::cout << "success to paper" <<std::endl;
+    } else { }
+}
+
+void MainWindow::on_rock_clicked()
+{
+    QString rock = "rock";
+    if(c_socket.state() == QTcpSocket::ConnectedState) {
+        c_socket.write(rock.toLatin1());
+        std::cout << "success to rock" <<std::endl;
+    } else { }
+}

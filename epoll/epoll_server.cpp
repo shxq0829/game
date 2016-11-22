@@ -179,8 +179,6 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         for(; it != ip_str.end(); ++it) {
             tmp += (*it).second;
             tmp += "\t";
-            //std::string str;
-            //std::cout<<<<std::endl;
             std::stringstream stream;
             stream << mapScore[(*it).second];
             tmp += stream.str();
@@ -191,6 +189,13 @@ int Epoll_server::readSocketEpoll(const epoll_event &ev)
         t.setS_fd((*ite).first);
         doTask(t);
         //std::cout << tmp <<std::endl;
+    } else if(strcmp(buf,"scissor")) {
+        std::string tmp = "you_cast_scissor";
+        Task t(tmp,Task::CASTING);
+        t.setIP(client_addr.sin_addr);
+        t.setS_fd((*ite).first);
+        doTask(t);
+        std::cout << tmp <<std::endl;
     } else {
         Task t(buf,Task::TALKING);
         t.setIP(client_addr.sin_addr);

@@ -57,6 +57,27 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="scissor">
+          <property name="text">
+           <string>scissor</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="paper">
+          <property name="text">
+           <string>paper</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="rock">
+          <property name="text">
+           <string>rock</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
