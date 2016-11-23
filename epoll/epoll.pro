@@ -11,4 +11,5 @@ INCLUDEPATH += .
 HEADERS += epoll_server.h socketheads.h zepoll.h \
     task.h
 SOURCES += epoll_server.cpp main.cpp zepoll.cpp \
-    task.cpp
+    task.cpp \
+    room_server.cpp
